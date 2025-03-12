@@ -30,13 +30,21 @@ const agent = new SeiAgentKit(
     OPENAI_API_KEY: "",
   },
 );
-async function main(
-  contract?: string) {
-  try {
-    
 
+async function main() {
+  try {
+    // TEST YOUR PLUGIN FUNCTIONS BELOW
+    // 
+    // Example usage:
+    // console.log("Testing staking function...");
+    // const stakeResult = await agent.stakeTokens(100);
+    // console.log("Stake result:", stakeResult);
+    //
+    // console.log("Testing another function...");
+    // const anotherResult = await agent.anotherFunction("param1", "param2");
+    // console.log("Another result:", anotherResult);
   }
- catch (err) {
+  catch (err) {
     console.error(err);
     return null;
   }
