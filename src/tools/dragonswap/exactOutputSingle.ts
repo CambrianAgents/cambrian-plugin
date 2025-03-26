@@ -4,24 +4,17 @@ import { Address } from "viem";
 import { getBalance } from "../../utils";
 import { Transport, Chain, WalletClient, RpcSchema } from "viem";
 import { Account } from "viem";
-import { ExactInputSingleParams } from "../../types";
+import { ExactOutputSingleParams } from "../../types";
 import { Abi } from "viem";
-// import { isAddress } from "ethers";
-// import { ExactInputSingleParams, ExactOutputSingleParams } from "./types";
-// import { JsonRpcProvider } from "ethers";
-// import { Wallet } from "ethers";
-// import { Contract } from "ethers";
-// import * as dotenv from "dotenv";
 
 const DRAGONSWAP_SWAP_ROUTER_02_ADDRESS: Address =
   "0x11DA6463D6Cb5a03411Dbf5ab6f6bc3997Ac7428";
 const DRAGONSWAP_FACTORY_ADDRESS: Address =
   "0x179D9a5592Bc77050796F7be28058c51cA575df4";
-
-const exactInputSingleAbi: Abi = [
+const exactOutputSingleAbi: Abi = [
   {
     type: "function",
-    name: "exactInputSingle",
+    name: "exactOutputSingle",
     stateMutability: "payable",
     inputs: [
       {
@@ -32,37 +25,40 @@ const exactInputSingleAbi: Abi = [
           { name: "tokenOut", type: "address" },
           { name: "fee", type: "uint24" },
           { name: "recipient", type: "address" },
-          { name: "amountIn", type: "uint256" },
-          { name: "amountOutMinimum", type: "uint256" },
+          { name: "amountOut", type: "uint256" },
+          { name: "amountInMaximum", type: "uint256" },
           { name: "sqrtPriceLimitX96", type: "uint160" },
         ],
       },
     ],
     outputs: [
       {
-        name: "amountOut",
+        name: "amountIn",
         type: "uint256",
       },
     ],
   },
 ];
+
 /**
- * Swap an exact input amount of an input token for as much output as possible.
+ * Swap an exact output amount of an output token for as little input as possible.
  * Single hop, meaning only one pool is used for the swap.
  * Note that (tokenIn, tokenOut, fee) uniquely identifies a pool.
  * @param agent SeiAgentKit instance
- * @param tokenIn Input token contract address
- * @param tokenOut Output token contract address
- * @param amountIn Amount of input token to swap
+ * @param tokenInAddress Input token contract address
+ * @param tokenOutAddress Output token contract address
+ * @param amountOut Amount of output token to receive
  * @param fee Fee in milli-bp (e.g. 100 = 0.01%)
-
+ * @param amountInMaximum Maximum amount of input token to spend
  */
-export async function exactInputSingle(
+export async function exactOutputSingle(
   agent: SeiAgentKit,
   tokenInAddress: Address,
   tokenOutAddress: Address,
+  tokenInMaximum: bigint,
+  amountOut: bigint,
   fee: number,
-  amountIn: bigint
+  amountInMaximum: bigint
 ) {
   const recipient = agent.wallet_address;
   if (
@@ -78,37 +74,31 @@ export async function exactInputSingle(
   const walletClient: WalletClient<Transport, Chain, Account> =
     agent.walletClient as WalletClient<Transport, Chain, Account>;
 
-  // Make sure you have enough balance of the input token
-  const balanceIn = await getBalance(agent, tokenInAddress);
-  if (balanceIn <= amountIn) {
-    throw new Error(`Insufficient balance of ${tokenInAddress}`);
-  }
-
-  // Approve the router to spend the input token
+  // Approve swap router to spend the input token
   const hashApprove = await walletClient.writeContract({
     address: tokenInAddress,
     abi: [
       "function approve(address spender, uint256 amount) public returns (bool)",
     ],
     functionName: "approve",
-    args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, amountIn],
+    args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, tokenInMaximum],
   });
 
   // Swap the input token for the output token
-  const exactInputSingleParams: ExactInputSingleParams = {
+  const exactOutputSingleParams: ExactOutputSingleParams = {
     tokenIn: tokenInAddress,
     tokenOut: tokenOutAddress,
     fee: fee,
-    amountIn: amountIn,
-    amountOutMinimum: 0n,
+    amountOut: amountOut,
+    amountInMaximum: amountInMaximum,
     recipient: recipient,
     sqrtPriceLimitX96: 0n,
   };
 
   const hashSwap = await walletClient.writeContract({
     address: DRAGONSWAP_SWAP_ROUTER_02_ADDRESS,
-    abi: exactInputSingleAbi,
+    abi: exactOutputSingleAbi,
     functionName: "exactInputSingle",
-    args: [exactInputSingleParams],
+    args: [exactOutputSingleParams],
   });
 }
