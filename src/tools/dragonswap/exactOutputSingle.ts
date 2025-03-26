@@ -1,7 +1,5 @@
 import { SeiAgentKit } from "../../index";
-import { get_erc20_balance } from "../sei-erc20";
 import { Address } from "viem";
-import { getBalance } from "../../utils";
 import { Transport, Chain, WalletClient, RpcSchema } from "viem";
 import { Account } from "viem";
 import { ExactOutputSingleParams } from "../../types";

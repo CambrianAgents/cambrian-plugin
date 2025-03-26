@@ -1,17 +1,10 @@
 import { SeiAgentKit } from "../../index";
-import { get_erc20_balance } from "../sei-erc20";
 import { Address } from "viem";
 import { getBalance } from "../../utils";
 import { Transport, Chain, WalletClient, RpcSchema } from "viem";
 import { Account } from "viem";
 import { ExactInputSingleParams } from "../../types";
 import { Abi } from "viem";
-// import { isAddress } from "ethers";
-// import { ExactInputSingleParams, ExactOutputSingleParams } from "./types";
-// import { JsonRpcProvider } from "ethers";
-// import { Wallet } from "ethers";
-// import { Contract } from "ethers";
-// import * as dotenv from "dotenv";
 
 const DRAGONSWAP_SWAP_ROUTER_02_ADDRESS: Address =
   "0x11DA6463D6Cb5a03411Dbf5ab6f6bc3997Ac7428";
