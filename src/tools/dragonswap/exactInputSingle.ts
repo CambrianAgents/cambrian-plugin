@@ -15,8 +15,6 @@ import { Abi } from "viem";
 
 const DRAGONSWAP_SWAP_ROUTER_02_ADDRESS: Address =
   "0x11DA6463D6Cb5a03411Dbf5ab6f6bc3997Ac7428";
-const DRAGONSWAP_FACTORY_ADDRESS: Address =
-  "0x179D9a5592Bc77050796F7be28058c51cA575df4";
 
 const exactInputSingleAbi: Abi = [
   {
