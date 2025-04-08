@@ -45,7 +45,7 @@ async function main() {
     // console.log("Another result:", anotherResult);
     console.log("Testing dragonswap...");
     const dragonswapResult = await dragonswap_test(agent);
-    console.log("Dragonswap result:", dragonswapResult);
+    // console.log("Dragonswap result:", dragonswapResult);
   }
   catch (err) {
     console.error(err);

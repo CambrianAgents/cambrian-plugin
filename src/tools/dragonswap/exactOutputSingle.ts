@@ -90,6 +90,11 @@ export async function exactOutputSingle(
     functionName: "approve",
     args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, amountInMaximum],
   });
+  console.log("Awaiting approval transaction...");
+  await agent.publicClient.waitForTransactionReceipt({
+    hash: hashApprove,
+    confirmations: 1,
+  });
 
   // Swap the input token for the output token
   const exactOutputSingleParams: ExactOutputSingleParams = {
@@ -108,6 +113,10 @@ export async function exactOutputSingle(
     functionName: "exactOutputSingle",
     args: [exactOutputSingleParams],
   });
-
-  return hashSwap;
+  console.log("Awaiting swap transaction...");
+  const receipt = await agent.publicClient.waitForTransactionReceipt({
+    hash: hashSwap,
+    confirmations: 1,
+  });
+  return receipt.transactionHash;
 }

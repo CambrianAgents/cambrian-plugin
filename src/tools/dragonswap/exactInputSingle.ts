@@ -85,7 +85,7 @@ export async function exactInputSingle(
   // Make sure you have enough balance of the input token
   const balanceIn = await getBalance(agent, tokenInAddress);
   if (balanceIn <= amountIn) {
-    throw new Error(`Insufficient balance of ${tokenInAddress}`);
+    throw new Error(`Insufficient balance of ${tokenInAddress}.\nBalance: ${balanceIn}\nNeeded: ${amountIn}`);
   }
 
   // Approve the router to spend the input token
@@ -94,6 +94,11 @@ export async function exactInputSingle(
     abi: approveAbi,
     functionName: "approve",
     args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, amountIn],
+  });
+  console.log(`Awaiting token in approval: ${hashApprove}`);
+  await agent.publicClient.waitForTransactionReceipt({
+    hash: hashApprove,
+    confirmations: 1,
   });
 
   // Swap the input token for the output token
@@ -113,6 +118,11 @@ export async function exactInputSingle(
     functionName: "exactInputSingle",
     args: [exactInputSingleParams],
   });
+  console.log(`Awaiting swap transaction: ${hashSwap}`);
+  const receipt = await agent.publicClient.waitForTransactionReceipt({
+    hash: hashSwap,
+    confirmations: 1,
+  });
 
-  return hashSwap;
+  return receipt
 }
