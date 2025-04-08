@@ -9,6 +9,7 @@ import {
 import { sei } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { get_erc20_balance, erc20_transfer } from '../tools';
+import { exactInputSingle, exactOutputSingle } from '../tools/dragonswap';
 import { Config } from '../types';
 
 export class SeiAgentKit {
@@ -39,6 +40,7 @@ export class SeiAgentKit {
     } else {
       this.config = configOrKey;
     }
+
   }
 
   async getERC20Balance(contract_address?: Address): Promise<string> {
@@ -53,4 +55,22 @@ export class SeiAgentKit {
     return erc20_transfer(this, amount, recipient, ticker);
   }
 
+  async exactInputSingle(
+    tokenInAddress: Address,
+    tokenOutAddress: Address,
+    fee: number,
+    amountIn: bigint
+  ): Promise<string> {
+    return exactInputSingle(this, tokenInAddress, tokenOutAddress, fee, amountIn);
+  }
+
+  async exactOutputSingle(
+    tokenInAddress: Address,
+    tokenOutAddress: Address,
+    fee: number,
+    amountInMaximum: bigint,
+    amountOut: bigint
+  ): Promise<string> {
+    return exactOutputSingle(this, tokenInAddress, tokenOutAddress, amountOut, fee, amountInMaximum);
+  }
 }
