@@ -7,6 +7,7 @@ import { Abi } from "viem";
 
 const DRAGONSWAP_SWAP_ROUTER_02_ADDRESS: Address =
   "0x11DA6463D6Cb5a03411Dbf5ab6f6bc3997Ac7428";
+
 const exactOutputSingleAbi: Abi = [
   {
     type: "function",
@@ -35,6 +36,18 @@ const exactOutputSingleAbi: Abi = [
     ],
   },
 ];
+const approveAbi: Abi = [
+  {
+    type: "function",
+    name: "approve",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+];
 
 /**
  * Swap an exact output amount of an output token for as little input as possible.
@@ -51,7 +64,6 @@ export async function exactOutputSingle(
   agent: SeiAgentKit,
   tokenInAddress: Address,
   tokenOutAddress: Address,
-  tokenInMaximum: bigint,
   amountOut: bigint,
   fee: number,
   amountInMaximum: bigint
@@ -73,11 +85,9 @@ export async function exactOutputSingle(
   // Approve swap router to spend the input token
   const hashApprove = await walletClient.writeContract({
     address: tokenInAddress,
-    abi: [
-      "function approve(address spender, uint256 amount) public returns (bool)",
-    ],
+    abi: approveAbi,
     functionName: "approve",
-    args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, tokenInMaximum],
+    args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, amountInMaximum],
   });
 
   // Swap the input token for the output token
@@ -97,4 +107,6 @@ export async function exactOutputSingle(
     functionName: "exactInputSingle",
     args: [exactOutputSingleParams],
   });
+
+  return hashSwap;
 }

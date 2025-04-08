@@ -37,6 +37,18 @@ const exactInputSingleAbi: Abi = [
     ],
   },
 ];
+const approveAbi: Abi = [
+  {
+    type: "function",
+    name: "approve",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+];
 /**
  * Swap an exact input amount of an input token for as much output as possible.
  * Single hop, meaning only one pool is used for the swap.
@@ -78,9 +90,7 @@ export async function exactInputSingle(
   // Approve the router to spend the input token
   const hashApprove = await walletClient.writeContract({
     address: tokenInAddress,
-    abi: [
-      "function approve(address spender, uint256 amount) public returns (bool)",
-    ],
+    abi: approveAbi,
     functionName: "approve",
     args: [DRAGONSWAP_SWAP_ROUTER_02_ADDRESS, amountIn],
   });
@@ -102,4 +112,6 @@ export async function exactInputSingle(
     functionName: "exactInputSingle",
     args: [exactInputSingleParams],
   });
+
+  return hashSwap;
 }
