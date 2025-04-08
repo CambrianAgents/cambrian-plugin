@@ -18,6 +18,7 @@ const exactInputSingleAbi: Abi = [
       {
         name: "params",
         type: "tuple",
+        internalType: "struct Unknown",
         components: [
           { name: "tokenIn", type: "address" },
           { name: "tokenOut", type: "address" },

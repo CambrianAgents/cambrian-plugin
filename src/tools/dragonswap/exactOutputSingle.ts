@@ -17,6 +17,7 @@ const exactOutputSingleAbi: Abi = [
       {
         name: "params",
         type: "tuple",
+        internalType: "struct Unknown",
         components: [
           { name: "tokenIn", type: "address" },
           { name: "tokenOut", type: "address" },
@@ -104,7 +105,7 @@ export async function exactOutputSingle(
   const hashSwap = await walletClient.writeContract({
     address: DRAGONSWAP_SWAP_ROUTER_02_ADDRESS,
     abi: exactOutputSingleAbi,
-    functionName: "exactInputSingle",
+    functionName: "exactOutputSingle",
     args: [exactOutputSingleParams],
   });
 
