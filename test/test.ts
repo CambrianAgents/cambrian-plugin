@@ -1,6 +1,6 @@
 import { SeiAgentKit } from "../src";
 import * as dotenv from "dotenv";
-
+import dragonswap_test from "./dragonswap/test";
 dotenv.config();
 
 function validateEnvironment(): void {
@@ -43,6 +43,9 @@ async function main() {
     // console.log("Testing another function...");
     // const anotherResult = await agent.anotherFunction("param1", "param2");
     // console.log("Another result:", anotherResult);
+    console.log("Testing dragonswap...");
+    const dragonswapResult = await dragonswap_test(agent);
+    // console.log("Dragonswap result:", dragonswapResult);
   }
   catch (err) {
     console.error(err);
